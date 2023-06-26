@@ -1,10 +1,11 @@
-#Roman Rudakov
-#Homework-5
-#21-06-2023
-#Grodno-IT-Academy-Python 3.10
+# Roman Rudakov
+# Homework-5
+# 21-06-2023
+# Grodno-IT-Academy-Python 3.10
 # import re
 import phonenumbers
 import math
+
 
 # Реализовать функцию get_ranges которая получает на вход непустой список неповторяющихся целых чисел,
 # отсортированных по возрастанию, которая этот список “сворачивает”.
@@ -33,6 +34,7 @@ def get_ranges(input_list):
 
     return result
 
+
 # Напсать функцию standardise_phones которая принимает любое
 # количество нестандартизированных телефонных номеров и возвращает
 # список стандартизированных номеров в том порядке в котором они были
@@ -54,6 +56,7 @@ def standardise_phones(*args):
             pass
     return result
 
+
 # Создайте функцию rope_product, которая берёт позитивный цельный номер,
 # который представляет собой длину верёвки. Длина этой
 # верёвки может быть разделена на любое количество более
@@ -67,6 +70,14 @@ def standardise_phones(*args):
 # rope_product(7) -> 12
 # rope_product(11) -> 54
 
+def rope_product(n):
+    if n <= 2:
+        return n
+    max_product = 0
+    for i in range(1, n):
+        max_product = max(max_product, i * (n - i), i * rope_product(n - i))
+    return max_product
+
 
 # Создайте декоратор handle_multiples который позволит функции rope_product
 # вернуть лиш один ответ если задано одно число и много ответов списком если
@@ -76,24 +87,22 @@ def standardise_phones(*args):
 # rope_product(7,11,23,45,32) -> [12, 54, 4374, 14348907, 118098]
 # для решения скопируйте функцию из предыдущей задачи сюда, добавьте к ней декоратор
 # здесь можно пользоваться циклами
-def handle_multiples(rope_product_func):
+
+def handle_multiples(func):
     def wrapper(*args):
-        if len(args) == 1 and isinstance(args[0], (list, tuple)):
-            return [rope_product_func(arg) for arg in args[0]]
+        if len(args) == 1:
+            return func(*args)
         else:
-            return rope_product_func(*args)
+            return [func(n) for n in args]
+
     return wrapper
+
 
 @handle_multiples
 def rope_product(n):
-    if n <= 1:
+    if n <= 2:
         return n
-
-    dp = [0] * (n + 1)
-    dp[1] = 1
-
-    for i in range(2, n + 1):
-        for j in range(1, i // 2 + 1):
-            dp[i] = max(dp[i], max(j, dp[j]) * max(i - j, dp[i - j]))
-
-    return dp[n]
+    max_product = 0
+    for i in range(1, n):
+        max_product = max(max_product, i * (n - i), i * rope_product(n - i))
+    return max_product
